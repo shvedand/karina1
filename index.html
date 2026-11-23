@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ДОСЬЄ №1 // ЛИШЕ ДЛЯ КАРІНИ</title>
+  <title>ДОСЬЄ №1702 // ЛИШЕ ДЛЯ КАРІНИ</title>
   <style>
     :root {
       --bg: #0b0d14;
@@ -390,7 +390,7 @@
     <!-- ЕКРАН 3: ХРЕСТИКИ-НУЛИКИ ДО ПЕРЕМОГИ -->
     <div id="screen3" class="screen">
       <h1>Міні-гра: Хрестики-нулики ❌⭕</h1>
-      <p>Щоб відкрити фінальне послання, Каріні потрібно виграти раунд. Ти граєш за <b>❌</b>!</p>
+      <p>Система грає серйозно. Щоб відкрити фінал, Каріні потрібно перехитрити її та виграти раунд за <b>❌</b>!</p>
 
       <div id="tttStatus" class="ttt-status">Твій хід — став ❌</div>
 
@@ -430,7 +430,7 @@
       </div>
 
       <div class="final-message" id="finalText">
-        Ці квіти — просто гарний привід нагадати, як сильно я тебе кохаю і як круто, що ти є поруч. Посміхнися просто зараз мартишка🐵❤️
+        Ці квіти — просто гарний привід нагадати, як сильно я тебе люблю і як круто, що ти є поруч. Посміхнися просто зараз ❤️
       </div>
 
       <button class="btn" onclick="launchHearts()">Запустити ще салют ❤️</button>
@@ -487,8 +487,8 @@
       const steps = [
         { p: 25, text: "Перевірка збігу за посмішкою… 100%" },
         { p: 58, text: "Вимірювання рівня чарівності… зашкалює" },
-        { p: 86, text: "Підготовка міні-випробування…" },
-        { p: 100, text: "Готово! Перехід до гри." }
+        { p: 86, text: "Завантаження жорсткого суперника…" },
+        { p: 100, text: "Готово! Починаємо гру." }
       ];
 
       let i = 0;
@@ -552,30 +552,81 @@
       line.forEach(i => cells[i].classList.add("win"));
     }
 
+    function countWinningThreats(b, player) {
+      let threats = 0;
+      for (const [a, c, d] of WIN_LINES) {
+        const vals = [b[a], b[c], b[d]];
+        const pCount = vals.filter(v => v === player).length;
+        const emptyCount = vals.filter(v => v === "").length;
+        if (pCount === 2 && emptyCount === 1) {
+          threats++;
+        }
+      }
+      return threats;
+    }
+
     function chooseBotMove() {
       const empty = board.map((v, i) => v === "" ? i : -1).filter(i => i !== -1);
       if (empty.length === 0) return -1;
 
-      // Бот іноді пропускає очевидний виграш, щоб гра була живою та проходимою
-      if (Math.random() < 0.35) {
-        return empty[Math.floor(Math.random() * empty.length)];
-      }
-
-      // Спроба виграти
+      // 1. Всегда забираем мгновенную победу за O
       for (const idx of empty) {
         const copy = [...board];
         copy[idx] = "O";
         if (checkWinner(copy)?.winner === "O") return idx;
       }
 
-      // Блокування виграшу гравця
-      for (const idx of empty) {
+      // 2. В 90% случаев строго блокируем победу X
+      const urgentBlocks = empty.filter(idx => {
         const copy = [...board];
         copy[idx] = "X";
-        if (checkWinner(copy)?.winner === "X") return idx;
+        return checkWinner(copy)?.winner === "X";
+      });
+      if (urgentBlocks.length > 0 && Math.random() < 0.9) {
+        return urgentBlocks[Math.floor(Math.random() * urgentBlocks.length)];
       }
 
-      return empty[Math.floor(Math.random() * empty.length)];
+      // Небольшой шанс (12%) сделать чуть более мягкий ход, чтобы победа оставалась достижимой
+      if (Math.random() < 0.12) {
+        return empty[Math.floor(Math.random() * empty.length)];
+      }
+
+      // 3. Оцениваем ходы по атаке, блокировке угроз и позиции
+      const corners = [0, 2, 6, 8];
+      const edges = [1, 3, 5, 7];
+      let bestScore = -Infinity;
+      let bestMoves = [];
+
+      for (const idx of empty) {
+        const copy = [...board];
+        copy[idx] = "O";
+        let score = 0;
+
+        // Создание угроз для O
+        score += countWinningThreats(copy, "O") * 18;
+
+        // Подавление возможных угроз X на следующем ходу
+        const oppCopy = [...board];
+        oppCopy[idx] = "X";
+        score += countWinningThreats(oppCopy, "X") * 14;
+
+        // Приоритет центра и углов
+        if (idx === 4) score += 12;
+        else if (corners.includes(idx)) score += 8;
+        else if (edges.includes(idx)) score += 3;
+
+        // Лёгкий шум для разнообразия партий
+        score += Math.random() * 2.5;
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestMoves = [idx];
+        } else if (Math.abs(score - bestScore) < 0.001) {
+          bestMoves.push(idx);
+        }
+      }
+
+      return bestMoves[Math.floor(Math.random() * bestMoves.length)];
     }
 
     function handlePlayerMove(idx) {
@@ -591,7 +642,7 @@
       }
 
       gameLocked = true;
-      document.getElementById("tttStatus").textContent = "Хід системи (⭕)…";
+      document.getElementById("tttStatus").textContent = "Система думає над ходом (⭕)…";
 
       setTimeout(() => {
         const botIdx = chooseBotMove();
@@ -607,7 +658,7 @@
           gameLocked = false;
           document.getElementById("tttStatus").textContent = "Твій хід — став ❌";
         }
-      }, 360);
+      }, 380);
     }
 
     function resolveRound(res) {
@@ -617,14 +668,16 @@
 
       if (res.winner === "X") {
         highlightWin(res.line);
-        document.getElementById("tttStatus").textContent = "Перемога! Доступ відкрито 🎉";
+        document.getElementById("tttStatus").textContent = "Є! Ти перехитрила систему 🎉";
         note.textContent = "";
         setTimeout(openFinal, 850);
       } else {
         if (res.winner === "O") {
-          note.textContent = "Система забрала раунд — спробуй ще раз, поки не виграєш!";
+          note.textContent = attemptCount === 1
+            ? "Не так просто! Система забрала раунд — спробуй ще раз!"
+            : "Знову повз! Збери комбінацію та виграй цей раунд!";
         } else {
-          note.textContent = "Нічия! Потрібна саме перемога — граємо ще раз!";
+          note.textContent = "Нічия! Потрібна саме перемога — починаємо новий раунд!";
         }
         setTimeout(() => {
           initBoard();

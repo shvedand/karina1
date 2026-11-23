@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ДОСЬЄ №1702 // ЛИШЕ ДЛЯ КАРІНИ</title>
+  <title>ДОСЬЄ №01 // ЛИШЕ ДЛЯ КАРІНИ</title>
   <style>
     :root {
       --bg: #0b0d14;
@@ -430,7 +430,7 @@
       </div>
 
       <div class="final-message" id="finalText">
-        Ці квіти — просто гарний привід нагадати, як сильно я тебе люблю і як круто, що ти є поруч. Посміхнися просто зараз ❤️
+        Ці квіти — просто гарний привід нагадати, як сильно я тебе кохаю і як круто, що ти є поруч. Посміхнися просто зараз мартишка🐵❤️
       </div>
 
       <button class="btn" onclick="launchHearts()">Запустити ще салют ❤️</button>
@@ -569,14 +569,12 @@
       const empty = board.map((v, i) => v === "" ? i : -1).filter(i => i !== -1);
       if (empty.length === 0) return -1;
 
-      // 1. Всегда забираем мгновенную победу за O
       for (const idx of empty) {
         const copy = [...board];
         copy[idx] = "O";
         if (checkWinner(copy)?.winner === "O") return idx;
       }
 
-      // 2. В 90% случаев строго блокируем победу X
       const urgentBlocks = empty.filter(idx => {
         const copy = [...board];
         copy[idx] = "X";
@@ -586,12 +584,10 @@
         return urgentBlocks[Math.floor(Math.random() * urgentBlocks.length)];
       }
 
-      // Небольшой шанс (12%) сделать чуть более мягкий ход, чтобы победа оставалась достижимой
       if (Math.random() < 0.12) {
         return empty[Math.floor(Math.random() * empty.length)];
       }
 
-      // 3. Оцениваем ходы по атаке, блокировке угроз и позиции
       const corners = [0, 2, 6, 8];
       const edges = [1, 3, 5, 7];
       let bestScore = -Infinity;
@@ -602,20 +598,16 @@
         copy[idx] = "O";
         let score = 0;
 
-        // Создание угроз для O
         score += countWinningThreats(copy, "O") * 18;
 
-        // Подавление возможных угроз X на следующем ходу
         const oppCopy = [...board];
         oppCopy[idx] = "X";
         score += countWinningThreats(oppCopy, "X") * 14;
 
-        // Приоритет центра и углов
         if (idx === 4) score += 12;
         else if (corners.includes(idx)) score += 8;
         else if (edges.includes(idx)) score += 3;
 
-        // Лёгкий шум для разнообразия партий
         score += Math.random() * 2.5;
 
         if (score > bestScore) {

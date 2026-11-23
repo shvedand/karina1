@@ -283,16 +283,13 @@
     <!-- ЕКРАН 1: ПАРОЛЬ -->
     <div id="screen1" class="screen active">
       <h1>Доступ обмежено 🔒</h1>
-      <p>Цей букет прив’язався до секретного файлу. Щоб відкрити його, підтвердь, що квіти потрапили у потрібні руки.</p>
+      <p>Цей букет прив’язався до секретного файлу. Щоб відкрити його, введи правильний код доступу.</p>
 
       <input type="text" id="passInput" placeholder="Введи кодовий пароль..." autocomplete="off" />
       <div id="errorMsg" class="error-msg"></div>
 
       <button class="btn" onclick="checkPassword()">Розблокувати файл</button>
       <button class="btn btn-secondary" onclick="toggleHint()">Потрібна підказка?</button>
-      <button id="bypassBtn" class="btn btn-secondary" style="display:none; color:#4deeea;" onclick="goToScan()">
-        Гаразд, я точно Каріна — пропустити перевірку →
-      </button>
 
       <div id="hintBox" class="hint-box">
         Код - дата, яку ми запамʼятаємо назавжди
@@ -349,7 +346,6 @@
   <script>
     // НАЛАШТУВАННЯ
     const VALID_PASSWORDS = ["1702"];
-    let wrongAttempts = 0;
     let dodgeCount = 0;
 
     document.getElementById("passInput").addEventListener("keydown", function (e) {
@@ -369,11 +365,7 @@
         err.textContent = "";
         goToScan();
       } else {
-        wrongAttempts++;
         err.textContent = "Код не підійшов. Спробуй ще раз або відкрий підказку.";
-        if (wrongAttempts >= 2) {
-          document.getElementById("bypassBtn").style.display = "block";
-        }
       }
     }
 

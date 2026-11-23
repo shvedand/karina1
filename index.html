@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ДОСЬЄ №1702 // ЛИШЕ ДЛЯ КАРІНИ</title>
+  <style>
+    :root {
+      --bg: #0b0d14;
+      --card: #131724;
+      --border: #252c42;
+      --accent: #ff4d79;
+      --accent-glow: rgba(255, 77, 121, 0.35);
+      --cyan: #4deeea;
+      --text: #f3f5f9;
+      --muted: #8f9bb3;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      background: radial-gradient(circle at top, #181e33 0%, var(--bg) 65%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+      position: relative;
+      z-index: 2;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      color: var(--cyan);
+      margin-bottom: 18px;
+      letter-spacing: 0.5px;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      margin-right: 6px;
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    h1 {
+      font-size: 22px;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #0d101a;
+      color: var(--text);
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #ff4d79, #ff2e63);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 20px var(--accent-glow);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      position: relative;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      box-shadow: none;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 10px;
+      padding: 10px;
+    }
+
+    .hint-box {
+      display: none;
+      background: rgba(77, 238, 234, 0.08);
+      border: 1px solid rgba(77, 238, 234, 0.25);
+      color: #bcefed;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      margin-top: 12px;
+      line-height: 1.45;
+    }
+
+    .error-msg {
+      color: #ff6b8b;
+      font-size: 13.5px;
+      min-height: 20px;
+      margin-bottom: 8px;
+    }
+
+    /* Прогрес-бар сканування */
+    .scan-box {
+      background: #0d101a;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #1c2236;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--accent));
+      transition: width 0.25s ease;
+    }
+
+    .scan-log {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px;
+      color: var(--cyan);
+    }
+
+    .dodge-area {
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .dodge-note {
+      font-size: 13px;
+      color: var(--accent);
+      margin-top: 12px;
+      min-height: 18px;
+      text-align: center;
+    }
+
+    /* Фінальна картка */
+    .dossier-card {
+      background: linear-gradient(160deg, rgba(255, 77, 121, 0.12), rgba(77, 238, 234, 0.06));
+      border: 1px solid rgba(255, 77, 121, 0.35);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .dossier-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13.5px;
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+
+    .dossier-row:last-child {
+      border-bottom: none;
+    }
+
+    .dossier-label {
+      color: var(--muted);
+    }
+
+    .dossier-val {
+      font-weight: 600;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .final-message {
+      font-size: 16px;
+      color: var(--text);
+      line-height: 1.6;
+      background: #0d101a;
+      padding: 16px;
+      border-radius: 14px;
+      border-left: 3px solid var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .heart {
+      position: fixed;
+      top: -20px;
+      font-size: 20px;
+      pointer-events: none;
+      z-index: 1;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(105vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-bar">
+      <span><span class="status-dot"></span>FILE // SECRET_BOUQUET</span>
+      <span id="stepBadge">КРОК 1/3</span>
+    </div>
+
+    <!-- ЕКРАН 1: ПАРОЛЬ -->
+    <div id="screen1" class="screen active">
+      <h1>Доступ обмежено 🔒</h1>
+      <p>Цей букет прив’язався до секретного файлу. Щоб відкрити його, підтвердь, що квіти потрапили у потрібні руки.</p>
+
+      <input type="text" id="passInput" placeholder="Введи кодовий пароль..." autocomplete="off" />
+      <div id="errorMsg" class="error-msg"></div>
+
+      <button class="btn" onclick="checkPassword()">Розблокувати файл</button>
+      <button class="btn btn-secondary" onclick="toggleHint()">Потрібна підказка?</button>
+      <button id="bypassBtn" class="btn btn-secondary" style="display:none; color:#4deeea;" onclick="goToScan()">
+        Гаразд, я точно Каріна — пропустити перевірку →
+      </button>
+
+      <div id="hintBox" class="hint-box">
+        Код - дата, яку ми запамʼятаємо назавжди
+      </div>
+    </div>
+
+    <!-- ЕКРАН 2: СКАНУВАННЯ ТА КНОПКА, ЩО ТІКАЄ -->
+    <div id="screen2" class="screen">
+      <h1>Перевірка об’єкта…</h1>
+      <p>Система аналізує отримувачку букета перед видачею головного послання.</p>
+
+      <div class="scan-box">
+        <div id="scanLog" class="scan-log">Ініціалізація сканера…</div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div id="scanPercent" style="font-size:12px; color:var(--muted); text-align:right;">0%</div>
+      </div>
+
+      <div id="dodgeSection" class="dodge-area" style="display:none;">
+        <button id="dodgeBtn" class="btn" onclick="handleDodgeClick()">Відкрити послання 💌</button>
+        <div id="dodgeNote" class="dodge-note"></div>
+      </div>
+    </div>
+
+    <!-- ЕКРАН 3: ФІНАЛ -->
+    <div id="screen3" class="screen">
+      <h1>Доступ дозволено ✨</h1>
+      <p>Досьє успішно розшифровано. Нижче — офіційне зведення на сьогоднішній день:</p>
+
+      <div class="dossier-card">
+        <div class="dossier-row">
+          <span class="dossier-label">Отримувачка:</span>
+          <span class="dossier-val">Каріна (10 із 10)</span>
+        </div>
+        <div class="dossier-row">
+          <span class="dossier-label">Рівень милоти:</span>
+          <span class="dossier-val" style="color:#ff4d79;">147% (критичний)</span>
+        </div>
+        <div class="dossier-row">
+          <span class="dossier-label">Побічний ефект:</span>
+          <span class="dossier-val">Миттєва посмішка</span>
+        </div>
+      </div>
+
+      <div class="final-message" id="finalText">
+        Ці квіти — просто гарний привід нагадати, як сильно я тебе люблю і як круто, що ти є поруч. Посміхнися просто зараз ❤️
+      </div>
+
+      <button class="btn" onclick="launchHearts()">Запустити ще салют ❤️</button>
+    </div>
+  </div>
+
+  <script>
+    // НАЛАШТУВАННЯ
+    const VALID_PASSWORDS = ["1702"];
+    let wrongAttempts = 0;
+    let dodgeCount = 0;
+
+    document.getElementById("passInput").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") checkPassword();
+    });
+
+    function toggleHint() {
+      const box = document.getElementById("hintBox");
+      box.style.display = box.style.display === "block" ? "none" : "block";
+    }
+
+    function checkPassword() {
+      const val = document.getElementById("passInput").value.trim().toLowerCase();
+      const err = document.getElementById("errorMsg");
+
+      if (VALID_PASSWORDS.includes(val)) {
+        err.textContent = "";
+        goToScan();
+      } else {
+        wrongAttempts++;
+        err.textContent = "Код не підійшов. Спробуй ще раз або відкрий підказку.";
+        if (wrongAttempts >= 2) {
+          document.getElementById("bypassBtn").style.display = "block";
+        }
+      }
+    }
+
+    function goToScan() {
+      document.getElementById("screen1").classList.remove("active");
+      document.getElementById("screen2").classList.add("active");
+      document.getElementById("stepBadge").textContent = "КРОК 2/3";
+      runScan();
+    }
+
+    function runScan() {
+      const fill = document.getElementById("progressFill");
+      const pct = document.getElementById("scanPercent");
+      const log = document.getElementById("scanLog");
+
+      const steps = [
+        { p: 25, text: "Перевірка збігу за посмішкою… 100%" },
+        { p: 58, text: "Вимірювання рівня чарівності… зашкалює" },
+        { p: 86, text: "Завантаження секретного файлу…" },
+        { p: 100, text: "Готово! Об’єкт підтверджено." }
+      ];
+
+      let i = 0;
+      const timer = setInterval(() => {
+        if (i < steps.length) {
+          fill.style.width = steps[i].p + "%";
+          pct.textContent = steps[i].p + "%";
+          log.textContent = steps[i].text;
+          i++;
+        } else {
+          clearInterval(timer);
+          document.getElementById("dodgeSection").style.display = "flex";
+        }
+      }, 650);
+    }
+
+    function handleDodgeClick() {
+      const btn = document.getElementById("dodgeBtn");
+      const note = document.getElementById("dodgeNote");
+
+      if (dodgeCount === 0) {
+        dodgeCount++;
+        btn.style.transform = "translate(32px, -12px) rotate(3deg)";
+        note.textContent = "Ой, кнопка трохи злякалася твоєї краси. Натисни ще раз!";
+      } else if (dodgeCount === 1) {
+        dodgeCount++;
+        btn.style.transform = "translate(-32px, 10px) rotate(-3deg)";
+        note.textContent = "Майже спіймала! Остання спроба 😉";
+      } else {
+        btn.style.transform = "none";
+        openFinal();
+      }
+    }
+
+    function openFinal() {
+      document.getElementById("screen2").classList.remove("active");
+      document.getElementById("screen3").classList.add("active");
+      document.getElementById("stepBadge").textContent = "ФІНАЛ";
+      launchHearts();
+    }
+
+    function launchHearts() {
+      const symbols = ["❤️", "💖", "✨", "🌸"];
+      for (let i = 0; i < 24; i++) {
+        setTimeout(() => {
+          const el = document.createElement("div");
+          el.className = "heart";
+          el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+          el.style.left = Math.random() * 95 + "vw";
+          el.style.animationDuration = (2.4 + Math.random() * 2) + "s";
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 4500);
+        }, i * 90);
+      }
+    }
+  </script>
+</body>
+</html>

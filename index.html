@@ -390,7 +390,7 @@
     <!-- ЕКРАН 3: ХРЕСТИКИ-НУЛИКИ ДО ПЕРЕМОГИ -->
     <div id="screen3" class="screen">
       <h1>Міні-гра: Хрестики-нулики ❌⭕</h1>
-      <p>Система грає серйозно. Щоб відкрити фінал, Каріні потрібно перехитрити її та виграти раунд за <b>❌</b>!</p>
+      <p>Щоб відкрити фінал, Каріні потрібно виграти раунд за <b>❌</b>. Спробуй перехитрити суперника!</p>
 
       <div id="tttStatus" class="ttt-status">Твій хід — став ❌</div>
 
@@ -487,7 +487,7 @@
       const steps = [
         { p: 25, text: "Перевірка збігу за посмішкою… 100%" },
         { p: 58, text: "Вимірювання рівня чарівності… зашкалює" },
-        { p: 86, text: "Завантаження жорсткого суперника…" },
+        { p: 86, text: "Підготовка міні-випробування…" },
         { p: 100, text: "Готово! Починаємо гру." }
       ];
 
@@ -552,27 +552,20 @@
       line.forEach(i => cells[i].classList.add("win"));
     }
 
-    function countWinningThreats(b, player) {
-      let threats = 0;
-      for (const [a, c, d] of WIN_LINES) {
-        const vals = [b[a], b[c], b[d]];
-        const pCount = vals.filter(v => v === player).length;
-        const emptyCount = vals.filter(v => v === "").length;
-        if (pCount === 2 && emptyCount === 1) {
-          threats++;
-        }
-      }
-      return threats;
-    }
-
     function chooseBotMove() {
       const empty = board.map((v, i) => v === "" ? i : -1).filter(i => i !== -1);
       if (empty.length === 0) return -1;
 
-      for (const idx of empty) {
-        const copy = [...board];
-        copy[idx] = "O";
-        if (checkWinner(copy)?.winner === "O") return idx;
+      if (Math.random() < 0.28) {
+        return empty[Math.floor(Math.random() * empty.length)];
+      }
+
+      if (Math.random() < 0.7) {
+        for (const idx of empty) {
+          const copy = [...board];
+          copy[idx] = "O";
+          if (checkWinner(copy)?.winner === "O") return idx;
+        }
       }
 
       const urgentBlocks = empty.filter(idx => {
@@ -580,45 +573,16 @@
         copy[idx] = "X";
         return checkWinner(copy)?.winner === "X";
       });
-      if (urgentBlocks.length > 0 && Math.random() < 0.9) {
+      if (urgentBlocks.length > 0 && Math.random() < 0.55) {
         return urgentBlocks[Math.floor(Math.random() * urgentBlocks.length)];
       }
 
-      if (Math.random() < 0.12) {
-        return empty[Math.floor(Math.random() * empty.length)];
+      const preferred = [4, 0, 2, 6, 8].filter(i => empty.includes(i));
+      if (preferred.length > 0 && Math.random() < 0.55) {
+        return preferred[Math.floor(Math.random() * preferred.length)];
       }
 
-      const corners = [0, 2, 6, 8];
-      const edges = [1, 3, 5, 7];
-      let bestScore = -Infinity;
-      let bestMoves = [];
-
-      for (const idx of empty) {
-        const copy = [...board];
-        copy[idx] = "O";
-        let score = 0;
-
-        score += countWinningThreats(copy, "O") * 18;
-
-        const oppCopy = [...board];
-        oppCopy[idx] = "X";
-        score += countWinningThreats(oppCopy, "X") * 14;
-
-        if (idx === 4) score += 12;
-        else if (corners.includes(idx)) score += 8;
-        else if (edges.includes(idx)) score += 3;
-
-        score += Math.random() * 2.5;
-
-        if (score > bestScore) {
-          bestScore = score;
-          bestMoves = [idx];
-        } else if (Math.abs(score - bestScore) < 0.001) {
-          bestMoves.push(idx);
-        }
-      }
-
-      return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+      return empty[Math.floor(Math.random() * empty.length)];
     }
 
     function handlePlayerMove(idx) {
@@ -634,7 +598,7 @@
       }
 
       gameLocked = true;
-      document.getElementById("tttStatus").textContent = "Система думає над ходом (⭕)…";
+      document.getElementById("tttStatus").textContent = "Хід системи (⭕)…";
 
       setTimeout(() => {
         const botIdx = chooseBotMove();
@@ -650,7 +614,7 @@
           gameLocked = false;
           document.getElementById("tttStatus").textContent = "Твій хід — став ❌";
         }
-      }, 380);
+      }, 360);
     }
 
     function resolveRound(res) {
@@ -660,20 +624,18 @@
 
       if (res.winner === "X") {
         highlightWin(res.line);
-        document.getElementById("tttStatus").textContent = "Є! Ти перехитрила систему 🎉";
+        document.getElementById("tttStatus").textContent = "Є перемога! Доступ відкрито 🎉";
         note.textContent = "";
         setTimeout(openFinal, 850);
       } else {
         if (res.winner === "O") {
-          note.textContent = attemptCount === 1
-            ? "Не так просто! Система забрала раунд — спробуй ще раз!"
-            : "Знову повз! Збери комбінацію та виграй цей раунд!";
+          note.textContent = "Раунд за системою — спробуй ще раз, поки не виграєш!";
         } else {
-          note.textContent = "Нічия! Потрібна саме перемога — починаємо новий раунд!";
+          note.textContent = "Нічия! Потрібна саме перемога — граємо ще раз!";
         }
         setTimeout(() => {
           initBoard();
-        }, 1250);
+        }, 1200);
       }
     }
 

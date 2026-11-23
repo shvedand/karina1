@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ДОСЬЄ №1702 // ЛИШЕ ДЛЯ КАРІНИ</title>
+  <title>ДОСЬЄ №1 // ЛИШЕ ДЛЯ КАРІНИ</title>
   <style>
     :root {
       --bg: #0b0d14;
@@ -44,6 +44,27 @@
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
       position: relative;
       z-index: 2;
+      transition: box-shadow 0.5s ease, border-color 0.5s ease;
+    }
+
+    .container.final-glow {
+      border-color: rgba(255, 77, 121, 0.55);
+      animation: containerPulse 2.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes containerPulse {
+      0% {
+        box-shadow:
+          0 0 24px rgba(255, 77, 121, 0.25),
+          0 0 48px rgba(77, 238, 234, 0.12),
+          0 20px 50px rgba(0, 0, 0, 0.55);
+      }
+      100% {
+        box-shadow:
+          0 0 36px rgba(255, 77, 121, 0.45),
+          0 0 70px rgba(77, 238, 234, 0.22),
+          0 20px 50px rgba(0, 0, 0, 0.6);
+      }
     }
 
     .top-bar {
@@ -196,30 +217,85 @@
       color: var(--cyan);
     }
 
-    .dodge-area {
-      min-height: 110px;
+    /* Хрестики-нулики */
+    .ttt-status {
+      font-size: 14px;
+      color: var(--cyan);
+      background: #0d101a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      text-align: center;
+      min-height: 42px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
 
-    .dodge-note {
-      font-size: 13px;
+    .ttt-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .ttt-cell {
+      aspect-ratio: 1 / 1;
+      background: #0d101a;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.14s ease, border-color 0.2s ease, background 0.2s ease;
+      user-select: none;
+    }
+
+    .ttt-cell:hover:not(.taken) {
+      border-color: var(--accent);
+      background: #161b2c;
+    }
+
+    .ttt-cell:active:not(.taken) {
+      transform: scale(0.95);
+    }
+
+    .ttt-cell.x {
       color: var(--accent);
-      margin-top: 12px;
-      min-height: 18px;
+      text-shadow: 0 0 12px rgba(255, 77, 121, 0.45);
+    }
+
+    .ttt-cell.o {
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(77, 238, 234, 0.4);
+    }
+
+    .ttt-cell.win {
+      border-color: #4deeea;
+      background: rgba(77, 238, 234, 0.14);
+    }
+
+    .ttt-note {
+      font-size: 13.5px;
+      color: #ff8aa6;
+      min-height: 22px;
       text-align: center;
+      margin-top: 6px;
     }
 
     /* Фінальна картка */
     .dossier-card {
-      background: linear-gradient(160deg, rgba(255, 77, 121, 0.12), rgba(77, 238, 234, 0.06));
-      border: 1px solid rgba(255, 77, 121, 0.35);
+      background: linear-gradient(160deg, rgba(255, 77, 121, 0.14), rgba(77, 238, 234, 0.08));
+      border: 1px solid rgba(255, 77, 121, 0.4);
       border-radius: 16px;
       padding: 18px;
       margin-bottom: 16px;
+      box-shadow: 0 0 24px rgba(255, 77, 121, 0.18);
     }
 
     .dossier-row {
@@ -253,6 +329,7 @@
       border-radius: 14px;
       border-left: 3px solid var(--accent);
       margin-bottom: 14px;
+      box-shadow: 0 0 22px rgba(255, 77, 121, 0.22);
     }
 
     .heart {
@@ -274,10 +351,10 @@
 </head>
 <body>
 
-  <div class="container">
+  <div class="container" id="mainCard">
     <div class="top-bar">
       <span><span class="status-dot"></span>FILE // SECRET_BOUQUET</span>
-      <span id="stepBadge">КРОК 1/3</span>
+      <span id="stepBadge">КРОК 1/4</span>
     </div>
 
     <!-- ЕКРАН 1: ПАРОЛЬ -->
@@ -296,10 +373,10 @@
       </div>
     </div>
 
-    <!-- ЕКРАН 2: СКАНУВАННЯ ТА КНОПКА, ЩО ТІКАЄ -->
+    <!-- ЕКРАН 2: СКАНУВАННЯ -->
     <div id="screen2" class="screen">
       <h1>Перевірка об’єкта…</h1>
-      <p>Система аналізує отримувачку букета перед видачею головного послання.</p>
+      <p>Система аналізує отримувачку букета перед міні-випробуванням.</p>
 
       <div class="scan-box">
         <div id="scanLog" class="scan-log">Ініціалізація сканера…</div>
@@ -308,15 +385,32 @@
         </div>
         <div id="scanPercent" style="font-size:12px; color:var(--muted); text-align:right;">0%</div>
       </div>
-
-      <div id="dodgeSection" class="dodge-area" style="display:none;">
-        <button id="dodgeBtn" class="btn" onclick="handleDodgeClick()">Відкрити послання 💌</button>
-        <div id="dodgeNote" class="dodge-note"></div>
-      </div>
     </div>
 
-    <!-- ЕКРАН 3: ФІНАЛ -->
+    <!-- ЕКРАН 3: ХРЕСТИКИ-НУЛИКИ ДО ПЕРЕМОГИ -->
     <div id="screen3" class="screen">
+      <h1>Міні-гра: Хрестики-нулики ❌⭕</h1>
+      <p>Щоб відкрити фінальне послання, Каріні потрібно виграти раунд. Ти граєш за <b>❌</b>!</p>
+
+      <div id="tttStatus" class="ttt-status">Твій хід — став ❌</div>
+
+      <div class="ttt-board" id="tttBoard">
+        <div class="ttt-cell" data-idx="0"></div>
+        <div class="ttt-cell" data-idx="1"></div>
+        <div class="ttt-cell" data-idx="2"></div>
+        <div class="ttt-cell" data-idx="3"></div>
+        <div class="ttt-cell" data-idx="4"></div>
+        <div class="ttt-cell" data-idx="5"></div>
+        <div class="ttt-cell" data-idx="6"></div>
+        <div class="ttt-cell" data-idx="7"></div>
+        <div class="ttt-cell" data-idx="8"></div>
+      </div>
+
+      <div id="tttNote" class="ttt-note"></div>
+    </div>
+
+    <!-- ЕКРАН 4: ФІНАЛ -->
+    <div id="screen4" class="screen">
       <h1>Доступ дозволено ✨</h1>
       <p>Досьє успішно розшифровано. Нижче — офіційне зведення на сьогоднішній день:</p>
 
@@ -336,7 +430,7 @@
       </div>
 
       <div class="final-message" id="finalText">
-        Ці квіти — просто гарний привід нагадати, як сильно я тебе люблю і як круто, що ти є поруч. Посміхнися просто зараз ❤️
+        Ці квіти — просто гарний привід нагадати, як сильно я тебе кохаю і як круто, що ти є поруч. Посміхнися просто зараз мартишка🐵❤️
       </div>
 
       <button class="btn" onclick="launchHearts()">Запустити ще салют ❤️</button>
@@ -346,7 +440,16 @@
   <script>
     // НАЛАШТУВАННЯ
     const VALID_PASSWORDS = ["1702"];
-    let dodgeCount = 0;
+
+    const WIN_LINES = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    let board = Array(9).fill("");
+    let gameLocked = false;
+    let attemptCount = 0;
 
     document.getElementById("passInput").addEventListener("keydown", function (e) {
       if (e.key === "Enter") checkPassword();
@@ -372,7 +475,7 @@
     function goToScan() {
       document.getElementById("screen1").classList.remove("active");
       document.getElementById("screen2").classList.add("active");
-      document.getElementById("stepBadge").textContent = "КРОК 2/3";
+      document.getElementById("stepBadge").textContent = "КРОК 2/4";
       runScan();
     }
 
@@ -384,8 +487,8 @@
       const steps = [
         { p: 25, text: "Перевірка збігу за посмішкою… 100%" },
         { p: 58, text: "Вимірювання рівня чарівності… зашкалює" },
-        { p: 86, text: "Завантаження секретного файлу…" },
-        { p: 100, text: "Готово! Об’єкт підтверджено." }
+        { p: 86, text: "Підготовка міні-випробування…" },
+        { p: 100, text: "Готово! Перехід до гри." }
       ];
 
       let i = 0;
@@ -397,39 +500,149 @@
           i++;
         } else {
           clearInterval(timer);
-          document.getElementById("dodgeSection").style.display = "flex";
+          setTimeout(goToGame, 450);
         }
       }, 650);
     }
 
-    function handleDodgeClick() {
-      const btn = document.getElementById("dodgeBtn");
-      const note = document.getElementById("dodgeNote");
+    function goToGame() {
+      document.getElementById("screen2").classList.remove("active");
+      document.getElementById("screen3").classList.add("active");
+      document.getElementById("stepBadge").textContent = "КРОК 3/4";
+      initBoard();
+    }
 
-      if (dodgeCount === 0) {
-        dodgeCount++;
-        btn.style.transform = "translate(32px, -12px) rotate(3deg)";
-        note.textContent = "Ой, кнопка трохи злякалася твоєї краси. Натисни ще раз!";
-      } else if (dodgeCount === 1) {
-        dodgeCount++;
-        btn.style.transform = "translate(-32px, 10px) rotate(-3deg)";
-        note.textContent = "Майже спіймала! Остання спроба 😉";
+    function initBoard() {
+      board = Array(9).fill("");
+      gameLocked = false;
+      const cells = document.querySelectorAll(".ttt-cell");
+      cells.forEach((cell, idx) => {
+        cell.textContent = "";
+        cell.className = "ttt-cell";
+        cell.onclick = () => handlePlayerMove(idx);
+      });
+      document.getElementById("tttStatus").textContent = "Твій хід — став ❌";
+    }
+
+    function checkWinner(b) {
+      for (const line of WIN_LINES) {
+        const [a, c, d] = line;
+        if (b[a] && b[a] === b[c] && b[a] === b[d]) {
+          return { winner: b[a], line };
+        }
+      }
+      if (b.every(cell => cell !== "")) {
+        return { winner: "draw", line: [] };
+      }
+      return null;
+    }
+
+    function renderMarks() {
+      const cells = document.querySelectorAll(".ttt-cell");
+      board.forEach((val, idx) => {
+        cells[idx].textContent = val === "X" ? "❌" : val === "O" ? "⭕" : "";
+        cells[idx].classList.remove("x", "o", "taken");
+        if (val === "X") cells[idx].classList.add("x", "taken");
+        if (val === "O") cells[idx].classList.add("o", "taken");
+      });
+    }
+
+    function highlightWin(line) {
+      const cells = document.querySelectorAll(".ttt-cell");
+      line.forEach(i => cells[i].classList.add("win"));
+    }
+
+    function chooseBotMove() {
+      const empty = board.map((v, i) => v === "" ? i : -1).filter(i => i !== -1);
+      if (empty.length === 0) return -1;
+
+      // Бот іноді пропускає очевидний виграш, щоб гра була живою та проходимою
+      if (Math.random() < 0.35) {
+        return empty[Math.floor(Math.random() * empty.length)];
+      }
+
+      // Спроба виграти
+      for (const idx of empty) {
+        const copy = [...board];
+        copy[idx] = "O";
+        if (checkWinner(copy)?.winner === "O") return idx;
+      }
+
+      // Блокування виграшу гравця
+      for (const idx of empty) {
+        const copy = [...board];
+        copy[idx] = "X";
+        if (checkWinner(copy)?.winner === "X") return idx;
+      }
+
+      return empty[Math.floor(Math.random() * empty.length)];
+    }
+
+    function handlePlayerMove(idx) {
+      if (gameLocked || board[idx] !== "") return;
+
+      board[idx] = "X";
+      renderMarks();
+
+      const resAfterX = checkWinner(board);
+      if (resAfterX) {
+        resolveRound(resAfterX);
+        return;
+      }
+
+      gameLocked = true;
+      document.getElementById("tttStatus").textContent = "Хід системи (⭕)…";
+
+      setTimeout(() => {
+        const botIdx = chooseBotMove();
+        if (botIdx !== -1) {
+          board[botIdx] = "O";
+          renderMarks();
+        }
+
+        const resAfterO = checkWinner(board);
+        if (resAfterO) {
+          resolveRound(resAfterO);
+        } else {
+          gameLocked = false;
+          document.getElementById("tttStatus").textContent = "Твій хід — став ❌";
+        }
+      }, 360);
+    }
+
+    function resolveRound(res) {
+      gameLocked = true;
+      attemptCount++;
+      const note = document.getElementById("tttNote");
+
+      if (res.winner === "X") {
+        highlightWin(res.line);
+        document.getElementById("tttStatus").textContent = "Перемога! Доступ відкрито 🎉";
+        note.textContent = "";
+        setTimeout(openFinal, 850);
       } else {
-        btn.style.transform = "none";
-        openFinal();
+        if (res.winner === "O") {
+          note.textContent = "Система забрала раунд — спробуй ще раз, поки не виграєш!";
+        } else {
+          note.textContent = "Нічия! Потрібна саме перемога — граємо ще раз!";
+        }
+        setTimeout(() => {
+          initBoard();
+        }, 1250);
       }
     }
 
     function openFinal() {
-      document.getElementById("screen2").classList.remove("active");
-      document.getElementById("screen3").classList.add("active");
+      document.getElementById("screen3").classList.remove("active");
+      document.getElementById("screen4").classList.add("active");
       document.getElementById("stepBadge").textContent = "ФІНАЛ";
+      document.getElementById("mainCard").classList.add("final-glow");
       launchHearts();
     }
 
     function launchHearts() {
       const symbols = ["❤️", "💖", "✨", "🌸"];
-      for (let i = 0; i < 24; i++) {
+      for (let i = 0; i < 28; i++) {
         setTimeout(() => {
           const el = document.createElement("div");
           el.className = "heart";
@@ -438,7 +651,7 @@
           el.style.animationDuration = (2.4 + Math.random() * 2) + "s";
           document.body.appendChild(el);
           setTimeout(() => el.remove(), 4500);
-        }, i * 90);
+        }, i * 85);
       }
     }
   </script>
